@@ -48,8 +48,10 @@ set ranroot = ran # root for random filenames
 set anzepath = /Users/pecom/Documents/Research/BNL/4pcf/data/anze_encore
 set in = $anzepath/data/signal
 set out = $anzepath/output/signal
+set tmp = $anzepath/sig_scratch
+
 # set tmp = /gpfs/scratch/padari/encoreout # temporary directory for intermediate file storage for this run (ideally somewhere with fast I/O)
-set tmp = /Users/pecom/Documents/Research/BNL/4pcf/data/anze_encore/tmpout
+# set tmp = /Users/pecom/Documents/Research/BNL/4pcf/data/anze_encore/tmpout
 
 
 # module load anaconda/3
