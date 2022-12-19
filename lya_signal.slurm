@@ -71,7 +71,7 @@ set OMP_NUM_THREADS = 4
 if ($useAVX) then
   set code = ./encoreAVX
 else
-  set code = ./mac_encore
+  set code = ./encore
 endif
 
 if ($periodic) then

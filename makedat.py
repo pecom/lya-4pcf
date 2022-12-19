@@ -77,26 +77,28 @@ def process_sample_mock(sample):
     
     return lya_signal, lya_random
 
+
+
+
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("mode", choices=["SIGNAL", "SIMUL"])
+    parser.add_argument("-n", type=int, default=10)
     parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
     # print(args)
 
     if args.test:
         fsample = np.load('./test.npy')
-        # fsample = np.genfromtxt('./test.csv', delimiter=",", dtype=float)
     else:
-        #print("CHANGE THIS TO LYA.CSV")
         fsample = np.load('./fullobj.npy')
-        #fsample = np.genfromtxt('./lya.csv', delimiter=",", dtype=float)
 
     if args.mode == "SIGNAL":
         ls, lr = process_sample(fsample)
-        np.savetxt('./data/signal/signal.dat', ls, fmt='%1.6f', delimiter=' ')
-        np.savetxt('./data/signal/ran00.dat', lr, fmt='%1.6f', delimiter=' ')
+        np.savetxt('./data/signal/sig.data.gz', ls, fmt='%1.6f', delimiter=' ')
+        np.savetxt('./data/signal/ran.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
     else:
         ms, mr = process_sample_mock(fsample)
-        np.savetxt(f'./data/simul/signal.dat', ms, fmt='%1.6f', delimiter=' ')
-        np.savetxt(f'./data/simul/ran00.dat', mr, fmt='%1.6f', delimiter=' ')
+        os.makedirs(f'./data/simul{args.n}', exist_ok=True)
+        np.savetxt(f'./data/simul{args.n}/sig.data.gz', ms, fmt='%1.6f', delimiter=' ')
+        np.savetxt(f'./data/simul{args.n}/ran.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
