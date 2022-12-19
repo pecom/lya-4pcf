@@ -100,5 +100,6 @@ if __name__ == "__main__":
     else:
         ms, mr = process_sample_mock(fsample)
         os.makedirs(f'./data/simul{args.n}', exist_ok=True)
+        print(f"Made dir simul{args.n}")
         np.savetxt(f'./data/simul{args.n}/sig.data.gz', ms, fmt='%1.6f', delimiter=' ')
         np.savetxt(f'./data/simul{args.n}/ran.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
