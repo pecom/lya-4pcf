@@ -15,7 +15,7 @@ Run testmulti.sh - Will make 5 simulations and 1 true signal on a reduced data s
 
 If All is well with testmulti.sh then change the first line of singlerun.sh and signalrun.sh from (drop the —test argument):
 python makedat.py SIGNAL --test  —> python makedat.py SIGNAL 
-python makedat.py SIMUL --test  —> python makedat.py SIMUL 
+python makedat.py SIMUL --test -n $1  —> python makedat.py SIMUL -n $1
  
 I have never ran on the full data set and have no idea if the script to generate the data/simulation works. If possible it'll be a good idea to re-run testmulti.sh and double check that it runs properly.
 

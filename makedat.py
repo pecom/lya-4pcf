@@ -12,12 +12,24 @@ cosmo = ccl.Cosmology(
 
 rng = np.random.default_rng()
 
-def process_sample(sample):
+def process_sample(sample, north, test):
     alpha = .1
     lya_signal = []
     lya_random = []
 
-    ras, decs, zs, weight, delt = sample.T
+    if not test:
+        if north:
+            w=np.where((ras>1)&(ras<5))
+        else
+            w=np.where((ras<=1)&(ras>=5))
+    else:
+        if north:
+            w=np.where((ras>2)&(ras<2.1))
+        else
+            w=np.where((ras>2.5)&(ras<2.6))
+
+    ras, decs, zs, weight, delt = sample[w].T
+    print ("Cutting to {len(ras)} objects. North = {north} Test = {test}")
 
     sig_weights = weight * (1+ alpha * delt) # Signal
     rand_weights = -1 * weight
@@ -46,16 +58,24 @@ def process_sample_mock(sample):
     alpha = .1
     lya_signal = []
     lya_random = []
-    slen = len(sample)
 
-    ras, decs, zs, weight, delt = sample.T
+    if not test:
+        if north:
+            w=np.where((ras>1)&(ras<5))
+        else
+            w=np.where((ras<=1)&(ras>=5))
+    else:
+        if north:
+            w=np.where((ras>2)&(ras<2.1))
+        else
+            w=np.where((ras>2.5)&(ras<2.6))
+
+    ras, decs, zs, weight, delt = sample[w].T
+    print ("Mock: Cutting to {len(ras)} objects. North = {north} Test = {test}")
+
     permute = rng.permutation(slen)
     ras = ras[permute]
     decs = decs[permute]
-
-    print (ras[:100])
-    print(zs[:100])
-
 
     sig_weights = weight * (1+ alpha * delt) # Signal
     rand_weights = -1 * weight
@@ -91,18 +111,22 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # print(args)
     print ("reading...")
-    if args.test:
-        fsample = np.load('./test.npy')
-    else:
-        fsample = np.load('./fullobj.npy')
-    print("done...")
+    fsample = np.load('./fullobj.npy')
+
     if args.mode == "SIGNAL":
-        ls, lr = process_sample(fsample)
-        np.savetxt('./data/signal/sig.data.gz', ls, fmt='%1.6f', delimiter=' ')
-        np.savetxt('./data/signal/ran.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
+        ls, lr = process_sample(fsample, north=True, test=args.test)
+        np.savetxt('./data/signal/sigN.data.gz', ls, fmt='%1.6f', delimiter=' ')
+        np.savetxt('./data/signal/ranN.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
+        ls, lr = process_sample(fsample, north=False, test=args.test)
+        np.savetxt('./data/signal/sigS.data.gz', ls, fmt='%1.6f', delimiter=' ')
+        np.savetxt('./data/signal/ranS.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
+
     else:
-        ms, mr = process_sample_mock(fsample)
         os.makedirs(f'./data/simul{args.n}', exist_ok=True)
         print(f"Made dir simul{args.n}")
-        np.savetxt(f'./data/simul{args.n}/sig.data.gz', ms, fmt='%1.6f', delimiter=' ')
-        np.savetxt(f'./data/simul{args.n}/ran.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
+        ms, mr = process_sample_mock(fsample,north=True, test=args.test)
+        np.savetxt(f'./data/simul{args.n}/sigN.data.gz', ms, fmt='%1.6f', delimiter=' ')
+        np.savetxt(f'./data/simul{args.n}/ranN.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
+        ms, mr = process_sample_mock(fsample,north=False, test=args.test)
+        np.savetxt(f'./data/simul{args.n}/sigS.data.gz', ms, fmt='%1.6f', delimiter=' ')
+        np.savetxt(f'./data/simul{args.n}/ranS.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
