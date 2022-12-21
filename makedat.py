@@ -96,7 +96,7 @@ def process_sample_mock(sample):
     new_decs = np.zeros(len(decs))
 
     for i,qi in enumerate(qid_ndx):
-        q_filt = qid==q
+        q_filt = qid==qi
         new_ras[q_filt] = tra[qid_ndx[remap[i]]]
         new_decs[q_filt] = tdec[qid_ndx[remap[i]]]
 
@@ -131,11 +131,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("mode", choices=["SIGNAL", "SIMUL"])
     parser.add_argument("-n", type=int, default=10)
-    parser.add_argument("--test", action="store_true")
+    # parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
     # print(args)
     print ("reading...")
-    fsample = np.load('./fullobj.npy')
+    fsample = np.load('./qid_obj.npy')
 
     if args.mode == "SIGNAL":
         ls, lr = process_sample(fsample, north=True, test=args.test)
