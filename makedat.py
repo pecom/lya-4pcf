@@ -53,10 +53,13 @@ def process_sample_mock(sample):
     ras = ras[permute]
     decs = decs[permute]
 
+    print (ras[:100])
+    print(zs[:100])
+
 
     sig_weights = weight * (1+ alpha * delt) # Signal
     rand_weights = -1 * weight
-    radii = cosmo.comoving_radial_distance(1/(1+zs))
+    radii = ccl.comoving_radial_distance(cosmo,1/(1+zs))
     c = SkyCoord(ras*u.rad, decs*u.rad, distance=radii*u.Mpc)
     goodndx = (weight > .1) * (np.abs(delt) < 5)
     goodc = c[goodndx]
@@ -87,12 +90,12 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
     # print(args)
-
+    print ("reading...")
     if args.test:
         fsample = np.load('./test.npy')
     else:
         fsample = np.load('./fullobj.npy')
-
+    print("done...")
     if args.mode == "SIGNAL":
         ls, lr = process_sample(fsample)
         np.savetxt('./data/signal/sig.data.gz', ls, fmt='%1.6f', delimiter=' ')
