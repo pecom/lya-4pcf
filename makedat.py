@@ -6,6 +6,13 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from argparse import ArgumentParser
 
+
+# Need to set the scratch database and write directly here
+# if we want to remove the gunzip in the scripts
+
+
+# scratch_dirbase = '/astro/u/anze/work/prakruth/lya-4pcf/scratch'
+
 h=.7
 cosmo = ccl.Cosmology(
     Omega_c=0.27, Omega_b=0.045, h=h, sigma8=0.8, n_s=0.96)
@@ -16,6 +23,8 @@ def process_sample(sample, north, test):
     alpha = .1
     lya_signal = []
     lya_random = []
+
+    qid, ras, decs, zs, weight, delt = sample.T
 
     if not test:
         if north:
@@ -28,7 +37,8 @@ def process_sample(sample, north, test):
         else
             w=np.where((ras>2.5)&(ras<2.6))
 
-    ras, decs, zs, weight, delt = sample[w].T
+
+    qid, ras, decs, zs, weight, delt = sample[w].T
     print ("Cutting to {len(ras)} objects. North = {north} Test = {test}")
 
     sig_weights = weight * (1+ alpha * delt) # Signal
@@ -59,6 +69,8 @@ def process_sample_mock(sample):
     lya_signal = []
     lya_random = []
 
+    qid, ras, decs, zs, weight, delt = sample.T
+
     if not test:
         if north:
             w=np.where((ras>1)&(ras<5))
@@ -70,12 +82,27 @@ def process_sample_mock(sample):
         else
             w=np.where((ras>2.5)&(ras<2.6))
 
-    ras, decs, zs, weight, delt = sample[w].T
+
+    qid, ras, decs, zs, weight, delt = sample[w].T
     print ("Mock: Cutting to {len(ras)} objects. North = {north} Test = {test}")
 
-    permute = rng.permutation(slen)
-    ras = ras[permute]
-    decs = decs[permute]
+    qtable = np.load('./qid_table.npy')
+    tqid, tra, tdec = qtable.T
+
+    qid_ndx = np.unique(qid)
+    remap = rng.permutation(len(qid_ndx))
+
+    new_ras = np.zeros(len(ras))
+    new_decs = np.zeros(len(decs))
+
+    for i,qi in enumerate(qid_ndx):
+        q_filt = qid==q
+        new_ras[q_filt] = tra[qid_ndx[remap[i]]]
+        new_decs[q_filt] = tdec[qid_ndx[remap[i]]]
+
+
+    ras = new_ras
+    decs = new_decs
 
     sig_weights = weight * (1+ alpha * delt) # Signal
     rand_weights = -1 * weight
@@ -99,9 +126,6 @@ def process_sample_mock(sample):
     lya_random[:,3] = goodrw
     
     return lya_signal, lya_random
-
-
-
 
 if __name__ == "__main__":
     parser = ArgumentParser()
