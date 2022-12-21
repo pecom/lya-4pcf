@@ -89,9 +89,9 @@ if __name__ == "__main__":
     # print(args)
 
     if args.test:
-        fsample = np.load('./test.npy')
+        fsample = np.load('./avg_test.npy')
     else:
-        fsample = np.load('./fullobj.npy')
+        fsample = np.load('./avg_obj.npy')
 
     if args.mode == "SIGNAL":
         ls, lr = process_sample(fsample)
