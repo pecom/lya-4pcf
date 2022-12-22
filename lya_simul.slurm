@@ -49,7 +49,7 @@ setenv PATH /cvmfs/astro.sdcc.bnl.gov/SL73/packages/bacon/2021.12/bin:$PATH
 set anzepath = /astro/u/anze/work/prakruth/lya-4pcf/
 set in = "$anzepath/data/simul${1}"
 set out = "$anzepath/output/simul${1}"
-set tmp = "$anzepath/scratch${1}"
+set tmp = "/tmp/scratch${1}"
 
 # set tmp = /gpfs/scratch/padari/encoreout # temporary directory for intermediate file storage for this run (ideally somewhere with fast I/O)
 
