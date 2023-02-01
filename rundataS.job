@@ -1,0 +1,21 @@
+Universe 	  = vanilla
+
+Executable 	= /usr/bin/csh
+Arguments       = lya_signalS.slurm 
+
+getenv = True
+
+notification 	= Never
+Output  	= condor/rundataS.out
+Error           = condor/rundataS.err
+Log  		= condor/rundataS.log
+  
+request_memory  = 25G
+request_cpus    = 12
+GetEnv          = True
+
+Initialdir = $(PWD) 
+
+#PeriodicHold = (NumJobStarts>=1 && JobStatus == 1)
+Queue
+

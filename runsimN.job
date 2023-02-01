@@ -1,0 +1,21 @@
+Universe 	  = vanilla
+
+Executable 	= /usr/bin/csh
+Arguments       = lya_simul.slurm 20$(ProcID)N
+
+getenv = True
+
+notification 	= Never
+Output  	= condor/runsimN$(ProcId).out
+Error           = condor/runsimN$(ProcId).err
+Log  		= condor/runsimN$(ProcId).log
+  
+request_memory  = 44G
+request_cpus    = 12
+GetEnv          = True
+
+Initialdir = $(PWD) 
+
+#PeriodicHold = (NumJobStarts>=1 && JobStatus == 1)
+Queue ProcID in (1,15)
+

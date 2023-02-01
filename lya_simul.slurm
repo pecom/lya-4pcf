@@ -62,7 +62,7 @@ set tmp = "/tmp/scratch${1}"
 set RRR_coupling = $out/$ranroot.RRR_coupling.npy
 
 # Set number of threads (no SLURM)
-set OMP_NUM_THREADS = 16
+set OMP_NUM_THREADS = 12
 
 # Set number of threads (with SLURM)
 # set OMP_NUM_THREADS = $SLURM_NPROCS

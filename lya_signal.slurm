@@ -45,7 +45,8 @@ set boxsize = 1000 # only used if periodic=1
 set root = sig # root for data filenames
 set ranroot = ran # root for random filenames
 # set anzepath = /gpfs/home/padari/anze_encore/
-set anzepath = /Users/pecom/Documents/Research/BNL/4pcf/data/anze_encore
+setenv PATH /cvmfs/astro.sdcc.bnl.gov/SL73/packages/bacon/2021.12/bin:$PATH
+set anzepath = /astro/u/anze/work/prakruth/lya-4pcf/
 set in = $anzepath/data/signal
 set out = $anzepath/output/signal
 set tmp = $anzepath/sig_scratch
@@ -62,7 +63,7 @@ set tmp = $anzepath/sig_scratch
 set RRR_coupling = $out/$ranroot.RRR_coupling.npy
 
 # Set number of threads (no SLURM)
-set OMP_NUM_THREADS = 4
+set OMP_NUM_THREADS = 12
 
 # Set number of threads (with SLURM)
 # set OMP_NUM_THREADS = $SLURM_NPROCS
@@ -182,10 +183,10 @@ end    # foreach D-R loop
 # We do this in Python, and perform edge-correction unless the periodic flag is not set
   if ($periodic) then
     echo Combining files together without performing edge-corrections (using analytic R^N counts)
-    python3 python/combine_files_periodic.py $tmpout/$root $Ngal $boxsize $rmin $rmax >> $errlog
+    python python/combine_files_periodic.py $tmpout/$root $Ngal $boxsize $rmin $rmax >> $errlog
   else
     echo Combining files together and performing edge-corrections
-    python3 python/combine_files.py $tmpout/$root >> $errlog $OMP_NUM_THREADS
+    python python/combine_files.py $tmpout/$root >> $errlog $OMP_NUM_THREADS
   endif
   
   ### If the connected flag is set, also combine files to estimate the disconnected 4PCF
@@ -194,10 +195,10 @@ end    # foreach D-R loop
   if ($connected) then
     if ($periodic) then
       echo Combining files together to compute the disconnected 4PCF without performing edge corrections
-      python3 python/combine_disconnected_files_periodic.py $tmpout/$root 4 $Ngal $boxsize $rmin $rmax >> $errlog
+      python python/combine_disconnected_files_periodic.py $tmpout/$root 4 $Ngal $boxsize $rmin $rmax >> $errlog
     else
       echo Combining files together to compute the disconnected 4PCF including edge corrections
-      python3 python/combine_disconnected_files.py $tmpout/$root 4 $RRR_coupling >> $errlog
+      python python/combine_disconnected_files.py $tmpout/$root 4 $RRR_coupling >> $errlog
     endif
   endif
 

@@ -1,0 +1,20 @@
+Universe 	  = vanilla
+
+Executable 	= makedat.sh
+Arguments       = 40$(ProcID)
+
+getenv = True
+
+notification 	= Never
+Output  	= condor/makedat$(ProcId).out
+Error           = condor/makedat$(ProcId).err
+Log  		= condor/makedat(ProcId).log
+  
+request_memory  = 4G
+request_cpus    = 1
+GetEnv          = True
+
+Initialdir = $(PWD) 
+
+#PeriodicHold = (NumJobStarts>=1 && JobStatus == 1)
+Queue 2000
