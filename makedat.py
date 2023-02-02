@@ -44,32 +44,35 @@ def process_sample(sample, north, test, shuffle=False, seed=None):
     if shuffle:
         print ('shuffling ra/dec')
         rng = np.random.default_rng(seed=seed)
-        qtable = np.load('./qid_table.npy')
-        tqid, tra, tdec = qtable.T
-        tqid = tqid.astype(int)-1 ## they just happen to go 1..len()
+        qtable = np.load('./qidZ_lintable.npy')
+        # tqid, tra, tdec = qtable.T
+        tqid, tra, tdec, tz, tzbin  = qtable.T
+        tqid = tqid.astype(int) ## they just happen to go 1..len()
         assert(np.all(tqid == np.arange(len(tqid))))
         qid = qid.astype(int)-1
         qid_ndx = np.unique(qid)
         print ('total qid:',len(tqid), 'in sample:', len(qid_ndx))
 
-        remap = rng.permutation(len(qid_ndx))
-        xmap = np.zeros(len(tqid),int)+1000000 #to make sure we throw index error if fuck up
-        xmap[qid_ndx] = qid_ndx[remap]
+        xmap_diff = 1000000
+        xmap = np.zeros(len(tqid),int)+xmap_diff #to make sure we throw index error if fuck up
+        print(tzbin, np.unique(tzbin))
+        for z in np.unique(tzbin):
+            bin_z = np.where(tzbin == z)[0]
+            remap = rng.permutation(bin_z)
+            xmap[bin_z] = remap
+        print('unmodded xmaps', np.where(xmap == xmap_diff)[0])
+        # remap = rng.permutation(len(qid_ndx))
+
+        # xmap[qid_ndx] = qid_ndx[remap]
         ##debug: null reshuflle## remap = np.arange(len(qid_ndx))
         new_ras = np.zeros(len(ras))
         new_decs = np.zeros(len(decs))
-        
+
+
         new_ras = tra[xmap[qid]]
         new_decs = tdec[xmap[qid]]
-        #for i,qi in enumerate(tqdm.tqdm(qid_ndx)):
-        #    q_filt = (qid==qi)
-        #    new_ras[q_filt] = tra[qid_ndx[remap[i]]]
-        #    new_decs[q_filt] = tdec[qid_ndx[remap[i]]]
+
         assert (np.all(new_ras!=0))
-        ## only for null reshuf 
-        #assert(np.allclose(ras, new_ras))
-        ## ditto 
-        #assert(np.allclose(decs, new_decs))
         ras = new_ras
         decs = new_decs
         print ("done shuffling")
@@ -111,21 +114,21 @@ if __name__ == "__main__":
     fsample = np.load('./qid_obj.npy')
 
     if args.mode == "SIGNAL":
-        ls, lr = process_sample(fsample, north=True, test=args.test)
-        np.savetxt('./data/signal/sigN.data.gz', ls, fmt='%1.6f', delimiter=' ')
-        np.savetxt('./data/signal/ranN.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
+        # ls, lr = process_sample(fsample, north=True, test=args.test)
+        # np.savetxt('./data/signal/sigN.data.gz', ls, fmt='%1.6f', delimiter=' ')
+        # np.savetxt('./data/signal/ranN.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
         ls, lr = process_sample(fsample, north=False, test=args.test)
         np.savetxt('./data/signal/sigS.data.gz', ls, fmt='%1.6f', delimiter=' ')
         np.savetxt('./data/signal/ranS.ran.00.gz', lr, fmt='%1.6f', delimiter=' ')
 
     else:
-        os.makedirs(f'./data/simul{args.n}N', exist_ok=True)
+        # os.makedirs(f'./data/simul{args.n}N', exist_ok=True)
         os.makedirs(f'./data/simul{args.n}S', exist_ok=True)
         print(f"Made dir simul{args.n}")
-        ms, mr = process_sample(fsample,north=True, test=args.test, shuffle=True, seed=args.n)
-        print ('writing N...')
-        np.savetxt(f'./data/simul{args.n}N/sig.data.gz', ms, fmt='%1.6f', delimiter=' ')
-        np.savetxt(f'./data/simul{args.n}N/ran.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
+        # ms, mr = process_sample(fsample,north=True, test=args.test, shuffle=True, seed=args.n)
+        # print ('writing N...')
+        # np.savetxt(f'./data/simul{args.n}N/sig.data.gz', ms, fmt='%1.6f', delimiter=' ')
+        # np.savetxt(f'./data/simul{args.n}N/ran.ran.00.gz', mr, fmt='%1.6f', delimiter=' ')
         ms, mr = process_sample(fsample,north=False, test=args.test, shuffle=True, seed=1000000+args.n)
         print ('writing S...')
         np.savetxt(f'./data/simul{args.n}S/sig.data.gz', ms, fmt='%1.6f', delimiter=' ')
